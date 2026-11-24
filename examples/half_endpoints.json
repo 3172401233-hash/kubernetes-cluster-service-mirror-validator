@@ -1,0 +1,66 @@
+{
+  "source": {
+    "services": [
+      {
+        "namespace": "shop",
+        "name": "checkout",
+        "labels": {"app": "checkout"},
+        "ports": [
+          {"name": "http", "port": 80, "target_port": 8080, "protocol": "TCP"}
+        ],
+        "resource_version": "20"
+      }
+    ],
+    "endpoints": [
+      {
+        "namespace": "shop",
+        "name": "checkout",
+        "resource_version": "31",
+        "endpoints": [
+          {"address": "10.0.0.1", "zone": "zone-a", "labels": {"app": "checkout", "tier": "web"}},
+          {"address": "10.0.0.2", "zone": "zone-a", "labels": {"app": "checkout", "tier": "web"}},
+          {"address": "10.0.0.3", "zone": "zone-b", "labels": {"app": "checkout", "tier": "web"}},
+          {"address": "10.0.0.4", "zone": "zone-b", "labels": {"app": "checkout", "tier": "web"}}
+        ]
+      }
+    ]
+  },
+  "target": {
+    "services": [
+      {
+        "namespace": "shop",
+        "name": "checkout",
+        "labels": {"app": "checkout"},
+        "ports": [
+          {"name": "http", "port": 80, "target_port": 8080, "protocol": "TCP"}
+        ],
+        "resource_version": "20"
+      }
+    ],
+    "endpoints": [
+      {
+        "namespace": "shop",
+        "name": "checkout",
+        "resource_version": "30",
+        "endpoints": [
+          {"address": "10.0.0.0", "zone": "zone-a", "labels": {"app": "checkout", "tier": "legacy"}},
+          {"address": "10.0.0.1", "zone": "zone-a", "labels": {"app": "checkout", "tier": "web"}},
+          {"address": "10.0.0.2", "zone": "zone-a", "labels": {"app": "checkout", "tier": "web"}},
+          {"address": "10.0.0.3", "zone": "zone-b", "labels": {"app": "checkout", "tier": "legacy"}}
+        ]
+      }
+    ],
+    "network_policies": [
+      {
+        "namespace": "shop",
+        "name": "deny-legacy-tier",
+        "pod_selector": {"tier": "legacy"},
+        "ingress_ports": [{"port": 8080}],
+        "peers": [],
+        "ingress_enforced": true
+      }
+    ]
+  },
+  "failed_zones": ["zone-b"],
+  "caller": {"labels": {"role": "ingress-gateway"}, "namespace_labels": {"mesh": "true"}}
+}
